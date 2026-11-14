@@ -5,6 +5,9 @@
    ============================================================= */
 
 
+-- Se eliminan primero para poder recrearlas sin errores
+DROP VIEW IF EXISTS gold.fact_sales, gold.dim_products, gold.dim_customers;
+
 /* ---------- Dimensión clientes ---------- */
 CREATE OR REPLACE VIEW gold.dim_customers AS
 SELECT
@@ -31,9 +34,9 @@ SELECT
     pn.prd_key      AS product_number,
     pn.prd_nm       AS product_name,
     pn.cat_id       AS category_id,
-    pc.cat          AS category,
-    pc.subcat       AS subcategory,
-    pc.maintenance  AS maintenance,
+    COALESCE(pc.cat, 'n/a')         AS category,      -- categoría no existe en el ERP
+    COALESCE(pc.subcat, 'n/a')      AS subcategory,
+    COALESCE(pc.maintenance, 'n/a') AS maintenance,
     pn.prd_cost     AS cost,
     pn.prd_line     AS product_line,
     pn.prd_start_dt AS start_date

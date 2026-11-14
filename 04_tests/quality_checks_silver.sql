@@ -31,11 +31,14 @@ SELECT * FROM silver.crm_prd_info WHERE prd_end_dt < prd_start_dt;
 SELECT * FROM silver.crm_sales_details
 WHERE sls_order_dt > sls_ship_dt OR sls_order_dt > sls_due_dt;
 
--- 6. Ventas: ventas <> cantidad * precio, o valores nulos/negativos
+-- 6. Ventas: pedidos sin fecha
+SELECT * FROM silver.crm_sales_details WHERE sls_order_dt IS NULL;
+
+-- 7. Ventas: ventas <> cantidad * precio, o valores nulos/negativos
 SELECT * FROM silver.crm_sales_details
 WHERE sls_sales <> sls_quantity * sls_price
    OR sls_sales IS NULL OR sls_quantity IS NULL OR sls_price IS NULL
    OR sls_sales <= 0 OR sls_quantity <= 0 OR sls_price <= 0;
 
--- 7. ERP: fechas de nacimiento futuras
+-- 8. ERP: fechas de nacimiento futuras
 SELECT * FROM silver.erp_cust_az12 WHERE bdate > CURRENT_DATE;

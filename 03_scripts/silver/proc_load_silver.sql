@@ -71,7 +71,8 @@ BEGIN
     RAISE NOTICE '>> silver.crm_prd_info cargada';
 
     /* ---------- crm_sales_details ----------
-       - Convierte fechas YYYYMMDD a DATE (inválidas = NULL)
+       - Convierte fechas YYYYMMDD a DATE
+       - Fecha de pedido inválida = fecha de envío - 7 días
        - Recalcula ventas = cantidad * precio cuando no cuadran
        - Deriva el precio cuando es nulo o negativo            */
     TRUNCATE TABLE silver.crm_sales_details;
@@ -82,7 +83,10 @@ BEGIN
         sls_ord_num,
         sls_prd_key,
         sls_cust_id,
-        CASE WHEN LENGTH(sls_order_dt::TEXT) = 8 THEN TO_DATE(sls_order_dt::TEXT, 'YYYYMMDD') END,
+        CASE WHEN LENGTH(sls_order_dt::TEXT) = 8 THEN TO_DATE(sls_order_dt::TEXT, 'YYYYMMDD')
+             -- Fecha inválida: se reconstruye (el envío siempre es 7 días después del pedido)
+             WHEN LENGTH(sls_ship_dt::TEXT)  = 8 THEN TO_DATE(sls_ship_dt::TEXT, 'YYYYMMDD') - 7
+        END,
         CASE WHEN LENGTH(sls_ship_dt::TEXT)  = 8 THEN TO_DATE(sls_ship_dt::TEXT,  'YYYYMMDD') END,
         CASE WHEN LENGTH(sls_due_dt::TEXT)   = 8 THEN TO_DATE(sls_due_dt::TEXT,   'YYYYMMDD') END,
         CASE WHEN sls_sales IS NULL OR sls_sales <= 0
