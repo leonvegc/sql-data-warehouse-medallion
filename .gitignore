@@ -1,0 +1,10 @@
+# SQL Server / SSMS
+*.bak
+*.log
+*.suo
+*.user
+
+# OS / Office
+.DS_Store
+Thumbs.db
+~$*
